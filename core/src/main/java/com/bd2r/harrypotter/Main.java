@@ -4,14 +4,12 @@ package com.bd2r.harrypotter;
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.math.Vector3;
@@ -29,7 +27,6 @@ public class Main implements ApplicationListener {
     int direction = 0;
     float animationTimer = 0f;
     float frameDuration = 0.2f;
-    int[][] Map; // só declarado aqui
     float destinationX = -1;
     float destinationY = -1;
     boolean movingOnClick = false;
@@ -79,36 +76,11 @@ public class Main implements ApplicationListener {
         characterFrames = TextureRegion.split(characterTexture, 32, 32);
         currentFrame = characterFrames[0][1];
 
-        loadMap(); // <--- chamar aqui
-    }
-
-    private void loadMap() {
-        Array<String> lines = new Array<>();
-        FileHandle file = Gdx.files.internal("mapa.txt");
-
-        String text = file.readString();
-        String[] rawLines = text.split("\n");
-
-        for (String line : rawLines) {
-            lines.add(line.trim());
-        }
-
-        int rows = lines.size;
-        int cols = lines.get(0).length();
-        Map = new int[rows][cols];
-
-        for (int y = 0; y < rows; y++) {
-            String line = lines.get(y);
-            for (int x = 0; x < cols; x++) {
-                char c = line.charAt(x);
-                Map[rows - 1 - y][x] = (c == '1') ? 1 : 0;
-            }
-        }
     }
 
     @Override
     public void resize(int width, int height) {
-        viewport.update(width, height, true);
+        viewport.update(width, height, true); //true centra a camara
     }
 
     @Override
@@ -128,11 +100,6 @@ public class Main implements ApplicationListener {
         float worldHeight = viewport.getWorldHeight();
 
         spriteBatch.draw(worldTexture, 0, 0, worldWidth, worldHeight);
-        spriteBatch.draw(currentFrame,
-            characterSprite.getX(),
-            characterSprite.getY(),
-            characterSprite.getWidth(),
-            characterSprite.getHeight());
         //characterSprite.draw(spriteBatch);
         spriteBatch.draw(currentFrame, characterSprite.getX(), characterSprite.getY(), 1, 1);
 
@@ -196,11 +163,9 @@ public class Main implements ApplicationListener {
     }
 
     private void input() {
-        float speed = 200f;
         float delta = Gdx.graphics.getDeltaTime();
         boolean moving = false;
 
-        if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
         if (Gdx.input.justTouched()) {
             float x = Gdx.input.getX();
             float y = Gdx.input.getY();
@@ -259,10 +224,6 @@ public class Main implements ApplicationListener {
         }
     }
 
-    @Override
-    public void pause() {}
-    @Override
-    public void resume() {}
     @Override
     public void dispose () {
         characterTexture.dispose();
